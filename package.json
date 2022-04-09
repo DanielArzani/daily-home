@@ -22,5 +22,12 @@
   "homepage": "https://github.com/DanielArzani/daily-home#readme",
   "dependencies": {
     "concurrently": "^7.1.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": "v16.14.2",
+    "npm": "8.5.0"
   }
 }
