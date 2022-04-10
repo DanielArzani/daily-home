@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
 const db = require('./config/connection.js');
+const cors = require('cors');
 const { userRoutes } = require('./routes');
 
 require('dotenv').config({ path: '../.env' });
@@ -18,6 +19,7 @@ if (process.env.NODE_ENV === 'development') {
 /**-------------------------
  *    GLOBAL MIDDLEWARE
  *------------------------**/
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
