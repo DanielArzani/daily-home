@@ -7,11 +7,11 @@ function e(res, error) {
   });
 }
 
-function eid(res, obj) {
+function eid(res, obj, prop = 'ID') {
   res.status(404).json({
     status: 'fail',
     data: {
-      message: `No ${obj} found with this ID`,
+      message: `No ${obj} found with this ${prop}`,
     },
   });
 }

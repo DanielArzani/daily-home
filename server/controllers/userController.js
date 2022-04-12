@@ -134,3 +134,36 @@ exports.deleteUser = async (req, res) => {
     e(res, error);
   }
 };
+
+/**-------------------------
+ *          LOGIN
+ *------------------------**/
+// TODO Add this into authController
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // check to see if email is in database
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      eid(res, 'user', 'email or password');
+      return;
+    }
+
+    // check if password is correct
+    const pw = await user.isPasswordCorrect(password);
+    if (!pw) {
+      eid(res, 'user', 'email or password');
+      return;
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    e(res, error);
+  }
+};
