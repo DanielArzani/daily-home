@@ -3,6 +3,18 @@ const { User } = require('../models');
 const { e, eid } = require('../utils/catchError.js');
 
 /**-------------------------
+ *         GET ME
+ *------------------------**/
+exports.getMe = async (req, res) => {
+  try {
+    console.log(req.user);
+    res.end();
+  } catch (error) {
+    e(res, error);
+  }
+};
+
+/**-------------------------
  *      GET ALL USERS
  *------------------------**/
 exports.getUsers = async (req, res) => {
@@ -80,7 +92,6 @@ exports.addUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     //TODO: This will need to be changed
     const user = await User.findByIdAndUpdate(
       id,
@@ -129,39 +140,6 @@ exports.deleteUser = async (req, res) => {
     res.status(204).json({
       status: 'success',
       data: null,
-    });
-  } catch (error) {
-    e(res, error);
-  }
-};
-
-/**-------------------------
- *          LOGIN
- *------------------------**/
-// TODO Add this into authController
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // check to see if email is in database
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      eid(res, 'user', 'email or password');
-      return;
-    }
-
-    // check if password is correct
-    const pw = await user.isPasswordCorrect(password);
-    if (!pw) {
-      eid(res, 'user', 'email or password');
-      return;
-    }
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user,
-      },
     });
   } catch (error) {
     e(res, error);
