@@ -7,6 +7,16 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
 /**-------------------------
+ *       CREATE USER
+ *------------------------**/
+exports.addUser = catchAsync(async (req, res, next) => {
+  const { username, email, password, role } = req.body;
+  const user = await User.create({ username, email, password, role });
+
+  Auth.createSendToken(user, 201, res);
+});
+
+/**-------------------------
  *          LOGIN
  *------------------------**/
 exports.login = catchAsync(async (req, res, next) => {
@@ -39,6 +49,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     // Split string into array by space, token will be at position[1]
      token = req.headers.authorization.split(" ")[1]
   }
+  console.log(req.headers);
 
   // 401 -> Unauthorized
   if (!token) {
@@ -67,3 +78,23 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+/**-------------------------
+ *      AUTHORIZATION
+ *------------------------**/
+// Set permissions and user roles
+// In order to pass in arguments into a middleware function
+// In the tourRoutes, whats passed into the array gets passed into ...roles and those are what have permission
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
+    // The protect middleware function will run before this and thus req.user will be available
+    if (!roles.includes(req.user.role)) {
+      return next(
+        // 403 -> Forbidden
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };

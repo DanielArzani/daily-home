@@ -47,16 +47,6 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 /**-------------------------
- *       CREATE USER
- *------------------------**/
-exports.addUser = catchAsync(async (req, res, next) => {
-  const { username, email, password } = req.body;
-  const user = await User.create({ username, email, password });
-
-  Auth.createSendToken(user, 201, res);
-});
-
-/**-------------------------
  *       UPDATE USER
  *------------------------**/
 exports.updateUser = catchAsync(async (req, res, next) => {
@@ -84,6 +74,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 exports.deleteUser = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const user = await User.findByIdAndDelete(id);
+  console.log(user);
 
   if (!user) {
     return next(new AppError('No user found with that ID', 404));
