@@ -1,50 +1,21 @@
-const express = require('express');
-const morgan = require('morgan');
-const path = require('path');
 const db = require('./config/connection.js');
-const cors = require('cors');
-const { userRoutes } = require('./routes');
+
+/**-------------------------
+ *       SYNC ERRORS
+ *------------------------**/
+// For Sync Errors that don't originate from Node or Express
+process.on('uncaughtException', (err) => {
+  console.log(err.name, ':', err.message);
+  console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+  // If we can't connect to the DB, the app won't work, may as well shut down the server, we will do it gracefully though
+  // 0 stands for success and 1 for uncaught exception
+  process.exit(1);
+});
 
 require('dotenv').config({ path: '../.env' });
 
-const app = express();
 const PORT = process.env.PORT || 3001;
-
-console.log(process.env.NODE_ENV);
-// Only use morgan in development environment
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
-
-/**-------------------------
- *    GLOBAL MIDDLEWARE
- *------------------------**/
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-/**-------------------------
- *         ROUTES
- *------------------------**/
-app.use('/api/v1/users', userRoutes);
-
-// Will catch any requests (Get, Post, etc...) to non-specified routes
-app.all('*', (req, res, next) => {
-  res.status(404).send(`Can't find ${req.originalUrl} on this server`);
-});
-
-/**-------------------------
- *     PRODUCTION BUILD
- *------------------------**/
-// if we're in production, serve client/build as static assets
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-
-  // send index.html for any routes that don't exist
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
-  });
-}
+const app = require('./app.js');
 
 /**-------------------------
  *       CONNECTION
@@ -53,4 +24,18 @@ db.once('open', () => {
   app.listen(PORT, () =>
     console.log(`🌍 Now listening on http://localhost:${PORT}`)
   );
+});
+
+/**-------------------------
+ *      ASYNC ERRORS
+ *------------------------**/
+// For Async Errors that don't originate from Node or Express ~ Will catch promise rejections
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+  // If we can't connect to the DB, the app won't work, may as well shut down the server, we will do it gracefully though
+  server.close(() => {
+    // 0 stands for success and 1 for uncaught exception
+    process.exit(1);
+  });
 });

@@ -2,14 +2,14 @@ const router = require('express').Router();
 const userController = require('../controllers/userController.js');
 const authController = require('../controllers/authController.js');
 
-const { authMiddleware: auth } = require('../utils/auth.js');
+// const { authMiddleware: auth } = require('../utils/auth.js');
 
 router.route('/').get(userController.getUsers).post(userController.addUser);
 
-router.route('/login').post(authController.login);
+// router.route('/login').post(authController.login);
 
-router.route('/protected').get(auth, authController.protectedRoute);
-router.route('/protected2').get(auth, authController.protectedRoute2);
+// router.route('/protected').get(auth, authController.protectedRoute);
+// router.route('/protected2').get(auth, authController.protectedRoute2);
 
 router
   .route('/:id')

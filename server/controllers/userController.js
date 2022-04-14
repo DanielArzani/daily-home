@@ -1,147 +1,100 @@
 const { User } = require('../models');
-// took some repeated code and added them into functions
-const { e, eid } = require('../utils/catchError.js');
+const AppError = require('../utils/appError');
+// to help keep code dry, will remove the need for try...catch blocks
+const catchAsync = require('../utils/catchAsync.js');
 
 /**-------------------------
  *         GET ME
  *------------------------**/
-exports.getMe = async (req, res) => {
-  try {
-    console.log(req.user);
-    res.end();
-  } catch (error) {
-    e(res, error);
-  }
-};
+exports.getMe = catchAsync(async (req, res, next) => {
+  console.log(req.user);
+  res.end();
+});
 
 /**-------------------------
  *      GET ALL USERS
  *------------------------**/
-exports.getUsers = async (req, res) => {
-  try {
-    const users = await User.find({});
+exports.getUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find({});
 
-    res.status(200).json({
-      status: 'success',
-      results: users.length,
-      data: {
-        users,
-      },
-    });
-  } catch (error) {
-    e(res, error);
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    results: users.length,
+    data: {
+      users,
+    },
+  });
+});
 
 /**-------------------------
  *        GET USER
  *------------------------**/
-exports.getUser = async (req, res) => {
-  try {
-    //TODO: Change this, patch and delete to use JWT's
-    const { id } = req.body;
-    const user = await User.findById(id);
-    if (!user) {
-      eid(res, 'user');
-      return;
-    }
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    e(res, error);
+exports.getUser = catchAsync(async (req, res, next) => {
+  //TODO: Change this, patch and delete to use JWT's
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return next(new AppError('No user found with that ID', 404));
   }
-};
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
 /**-------------------------
  *       CREATE USER
  *------------------------**/
-exports.addUser = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-    const user = await User.create({ username, email, password });
+exports.addUser = catchAsync(async (req, res, next) => {
+  const { username, email, password } = req.body;
+  const user = await User.create({ username, email, password });
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    // If either username or email already exist, will throw this error
-    if (error.code === 11000) {
-      res.status(400).json({
-        status: 'error',
-        data: {
-          message: 'Both username and email must be unique ',
-        },
-      });
-      return;
-    }
-    e(res, error);
-  }
-};
+  res.status(201).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
 /**-------------------------
  *       UPDATE USER
  *------------------------**/
-exports.updateUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    //TODO: This will need to be changed
-    const user = await User.findByIdAndUpdate(
-      id,
-      { ...req.body },
-      { new: true, runValidators: true }
-    );
-    if (!user) {
-      eid(res, 'user');
-      return;
-    }
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    // If either username or email already exist, will throw this error
-    if (error.code === 11000) {
-      res.status(500).json({
-        status: 'error',
-        data: {
-          message: 'Both username and email must be unique ',
-        },
-      });
-      return;
-    }
-
-    e(res, error);
+exports.updateUser = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  //TODO: This will need to be changed
+  const user = await User.findByIdAndUpdate(
+    id,
+    { ...req.body },
+    { new: true, runValidators: true }
+  );
+  if (!user) {
+    return;
   }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
 /**-------------------------
  *       DELETE USER
  *------------------------**/
-exports.deleteUser = async (req, res) => {
-  try {
-    const { id } = req.body;
-    const user = await User.findByIdAndDelete(id);
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndDelete(id);
 
-    if (!user) {
-      eid(res, 'user');
-      return;
-    }
-
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  } catch (error) {
-    e(res, error);
+  if (!user) {
+    return next(new AppError('No user found with that ID', 404));
   }
-};
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
