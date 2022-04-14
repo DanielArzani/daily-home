@@ -57,7 +57,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 2) Verify token ~ 3 args (token, secret, callback), in order to use this with async and await, we will promisify it
+  // 2) Verify token ~ In order to use this with async and await, we will promisify it
   // If an error with the token happens at this point node will send it to our global error handler (errorController)
   const decoded = await promisify(jwt.verify)(
     token,
@@ -72,7 +72,7 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError('The user belonging to the token no longer exists', 401)
     );
 
-  // GRANT ACCESS TO PROTECTED ROUTE (Next middleware, route handler)
+  // GRANT ACCESS TO PROTECTED ROUTE
   // We are putting the found document (currentUser) onto the req object in case we want to use it later
   req.user = currentUser;
   next();
@@ -82,8 +82,6 @@ exports.protect = catchAsync(async (req, res, next) => {
  *      AUTHORIZATION
  *------------------------**/
 // Set permissions and user roles
-// In order to pass in arguments into a middleware function
-// In the tourRoutes, whats passed into the array gets passed into ...roles and those are what have permission
 exports.restrictTo =
   (...roles) =>
   (req, res, next) => {

@@ -29,7 +29,6 @@ app.use('/api/v1/users', userRoutes);
 
 // Will catch any requests (Get, Post, etc...) to non-specified routes
 app.all('*', (req, res, next) => {
-  // res.status(404).send(`Can't find ${req.originalUrl} on this server`);
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 

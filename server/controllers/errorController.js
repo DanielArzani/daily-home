@@ -75,10 +75,6 @@ module.exports = (err, req, res, next) => {
 
   // For development we want as much info on the bug as possible but in production we simply want to give a nice human friendly error message
   if (process.env.NODE_ENV === 'development') {
-    // This works
-    // if (err.name === 'CastError') {
-    //   sendErrorDev(err, res);
-    // }
     sendErrorDev(err, res);
   }
 

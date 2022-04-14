@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const AppError = require('../utils/appError');
+// const AppError = require('../utils/appError');
 // to help keep code dry, will remove the need for try...catch blocks
 const catchAsync = require('../utils/catchAsync.js');
 const Auth = require('../utils/auth.js');
@@ -22,7 +22,6 @@ exports.getMe = catchAsync(async (req, res, next) => {
 /**-------------------------
  *        UPDATE ME
  *------------------------**/
-// This is using the payload of the JWT which has different information than this updated one
 exports.updateMe = catchAsync(async (req, res, next) => {
   const id = req.user._id;
   const { username, email, password } = req.body;
@@ -33,7 +32,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   if (username) user.username = username;
   if (email) user.email = email;
   if (password) user.password = password;
-  // console.log(username);
 
   await user.save({ validateBeforeSave: false });
 

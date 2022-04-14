@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ['user', 'admin'],
-      // We set default so we don't always to specify what type of user we are creating
+      // Set default so that specifying what type of user isn't always required
       default: 'user',
     },
     password: {
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true, getters: true },
     toObject: { virtuals: true },
-    // We set id to false because this is a virtual that Mongoose returns, and we don’t need it
+    // Set id to false because this is a virtual that Mongoose returns, and it isn't needed
     id: false,
   }
 );

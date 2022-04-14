@@ -3,7 +3,7 @@ class AppError extends Error {
     super(message);
 
     this.statusCode = statusCode;
-    // Starts with works on strings, saves us from having to write fail or error for our JSend specs
+    // Saves us from having to write fail or error for our JSend specs
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     // Only errors we create our selves will have this property, we don't want to send an error that doesn't have this property (e.g. error from a package) to the client in production
     this.isOperational = true;
