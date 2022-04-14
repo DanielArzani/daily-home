@@ -2,13 +2,14 @@ const { User } = require('../models');
 const AppError = require('../utils/appError');
 // to help keep code dry, will remove the need for try...catch blocks
 const catchAsync = require('../utils/catchAsync.js');
+const Auth = require('../utils/auth.js');
 
 /**-------------------------
  *         GET ME
  *------------------------**/
 exports.getMe = catchAsync(async (req, res, next) => {
-  console.log(req.user);
-  res.end();
+  // console.log(req.user);
+  res.json(req.user);
 });
 
 /**-------------------------
@@ -52,12 +53,7 @@ exports.addUser = catchAsync(async (req, res, next) => {
   const { username, email, password } = req.body;
   const user = await User.create({ username, email, password });
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      user,
-    },
-  });
+  Auth.createSendToken(user, 201, res);
 });
 
 /**-------------------------
