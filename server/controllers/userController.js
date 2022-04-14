@@ -8,35 +8,8 @@ const Auth = require('../utils/auth.js');
  *         GET ME
  *------------------------**/
 exports.getMe = catchAsync(async (req, res, next) => {
-  // console.log(req.user);
-  res.json(req.user);
-});
-
-/**-------------------------
- *      GET ALL USERS
- *------------------------**/
-exports.getUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find({});
-
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
-
-/**-------------------------
- *        GET USER
- *------------------------**/
-exports.getUser = catchAsync(async (req, res, next) => {
-  //TODO: Change this, patch and delete to use JWT's
-  const { id } = req.params;
-  const user = await User.findById(id);
-  if (!user) {
-    return next(new AppError('No user found with that ID', 404));
-  }
+  const id = req.user._id;
+  const user = await User.findById(id).select(['-role', '-__v']);
 
   res.status(200).json({
     status: 'success',
@@ -47,21 +20,28 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 /**-------------------------
- *       UPDATE USER
+ *        UPDATE ME
  *------------------------**/
-exports.updateUser = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-  //TODO: This will need to be changed
-  const user = await User.findByIdAndUpdate(
-    id,
-    { ...req.body },
-    { new: true, runValidators: true }
-  );
-  if (!user) {
-    return;
-  }
+// This is using the payload of the JWT which has different information than this updated one
+exports.updateMe = catchAsync(async (req, res, next) => {
+  const id = req.user._id;
+  const { username, email, password } = req.body;
+
+  const user = await User.findById(id).select('+password');
+
+  //TODO: Add validation since mongoose's validators have been turned off
+  if (username) user.username = username;
+  if (email) user.email = email;
+  if (password) user.password = password;
+  // console.log(username);
+
+  await user.save({ validateBeforeSave: false });
+
+  Auth.createSendToken(user, 200, res);
+
   res.status(200).json({
     status: 'success',
+    token,
     data: {
       user,
     },
@@ -69,16 +49,16 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 });
 
 /**-------------------------
- *       DELETE USER
+ *   UPDATE MY PASSWORD
  *------------------------**/
-exports.deleteUser = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-  const user = await User.findByIdAndDelete(id);
-  console.log(user);
+//TODO: Create separate route for changing password
 
-  if (!user) {
-    return next(new AppError('No user found with that ID', 404));
-  }
+/**-------------------------
+ *       DELETE ME
+ *------------------------**/
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  const id = req.user._id;
+  await User.findByIdAndDelete(id);
 
   res.status(204).json({
     status: 'success',

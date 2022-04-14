@@ -1,25 +1,46 @@
 const router = require('express').Router();
 const userController = require('../controllers/userController.js');
+const adminController = require('../controllers/adminController.js');
 const authController = require('../controllers/authController.js');
 
-router.route('/').get(userController.getUsers).post(authController.addUser);
+/**------------------------------------------------------------------------
+ * *                                INFO
+ *   An admin can change his own information using the user routes
+ *   An admin can change another users info using the admin routes
+ *
+ *------------------------------------------------------------------------**/
 
+/**------------------------------------------------------------------------
+ *                         Login and Signup routes
+ *------------------------------------------------------------------------**/
+router.route('/signup').post(authController.addUser);
 router.route('/login').post(authController.login);
 
-router.route('/me').get(authController.protect, userController.getMe);
+/**------------------------------------------------------------------------
+ *         Must be logged in to access routes beyond this point
+ *------------------------------------------------------------------------**/
+router.use(authController.protect);
+
+/**------------------------------------------------------------------------
+ *                Routes that normal users have access to
+ *------------------------------------------------------------------------**/
+router
+  .route('/me')
+  .get(userController.getMe)
+  .patch(userController.updateMe)
+  .delete(userController.deleteMe);
+
+/**------------------------------------------------------------------------
+ *   Must have admin role in order to access routes beyond this point
+ *------------------------------------------------------------------------**/
+router.use(authController.restrictTo('admin'));
+
+router.route('/').get(adminController.getUsers);
 
 router
   .route('/:id')
-  .get(userController.getUser)
-  // findByIdAndUpdate replaces the entire doc, may change this to patch later
-  .put(userController.updateUser)
-  .delete(
-    authController.protect,
-    authController.restrictTo('admin'),
-    userController.deleteUser
-  );
-
-// All routes beneath this must have the admin role to have access to it
-router.use(authController.restrictTo('admin'));
+  .get(adminController.getUser)
+  .patch(adminController.updateUser)
+  .delete(adminController.DeleteUser);
 
 module.exports = router;

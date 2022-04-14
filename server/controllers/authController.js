@@ -49,7 +49,6 @@ exports.protect = catchAsync(async (req, res, next) => {
     // Split string into array by space, token will be at position[1]
      token = req.headers.authorization.split(" ")[1]
   }
-  console.log(req.headers);
 
   // 401 -> Unauthorized
   if (!token) {
