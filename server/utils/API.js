@@ -14,8 +14,8 @@ const verseId = 'JER.19.11';
  *   e.g. -> bibleVerses gets all verses and getVerse gets and shows the verse
  *         itself (instead of just a reference to it)
  *
- *   GetRandomVerse uses a different api to save some trouble of having to
- *   create loop through and get random books and verses
+ *   GetRandomVerse uses a different api to save the trouble of having to
+ *   loop through and get random books and verses
  *------------------------------------------------------------------------**/
 
 /**------------------------------------------------------------------------
@@ -142,3 +142,18 @@ exports.bibleVerseRandom = async () => {
 /**------------------------------------------------------------------------
  *                              IMAGE API
  *------------------------------------------------------------------------**/
+exports.getRandomImage = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: 'https://api.unsplash.com/photos/random',
+      headers: {
+        'Accept-Version': 'v1',
+        Authorization: `Client-ID ${process.env.UNSPLASH_API_ACCESS_KEY}`,
+      },
+    });
+    console.log(response);
+  } catch (error) {
+    if (error) console.log(error);
+  }
+};
