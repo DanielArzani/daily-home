@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const path = require('path');
 const cors = require('cors');
 
-const { userRoutes } = require('./routes');
+const { bibleRoutes, userRoutes } = require('./routes');
 const AppError = require('./utils/appError');
 const GlobalErrorHandler = require('./controllers/errorController.js');
 
@@ -26,6 +26,7 @@ app.use(express.json());
  *         ROUTES
  *------------------------**/
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/bible', bibleRoutes);
 
 // Will catch any requests (Get, Post, etc...) to non-specified routes
 app.all('*', (req, res, next) => {
