@@ -125,7 +125,7 @@ exports.bibleVerseRandom = async () => {
       url: 'https://uncovered-treasure-v1.p.rapidapi.com/random',
       headers: {
         'X-RapidAPI-Host': 'uncovered-treasure-v1.p.rapidapi.com',
-        'X-RapidAPI-Key': 'bccfc8b6e4mshd7819a907969b7dp1a0d07jsn4b9aca311614',
+        'X-RapidAPI-Key': process.env.BIBLE_APP_RANDOM_VERSE,
       },
     };
 
