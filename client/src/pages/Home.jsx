@@ -1,6 +1,12 @@
 import React from 'react';
+import { Container, Typography } from '@mui/material';
+
+import { Header, SearchBar, Shortcut, ShortcutBar } from '../components';
 
 function Home() {
+  /**-------------------------
+   **         HOOKS
+   *------------------------**/
   // Random Background Image
   //   React.useEffect(() => {
   //     fetch('https://api.unsplash.com/photos/random', {
@@ -21,7 +27,20 @@ function Home() {
   //       });
   //   }, []);
 
-  return <></>;
+  /**-------------------------
+   **         STYLES
+   *------------------------**/
+  const styles = {};
+
+  return (
+    <>
+      <Container maxWidth='lg'>
+        <Typography component='h1' variant='h2' gutterBottom>
+          Welcome USER
+        </Typography>
+      </Container>
+    </>
+  );
 }
 
 export default Home;
