@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const { bibleRoutes, userRoutes } = require('./routes');
 const AppError = require('./utils/appError');
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 /**-------------------------
  *         ROUTES
