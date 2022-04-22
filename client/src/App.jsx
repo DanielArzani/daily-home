@@ -11,11 +11,13 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Login setLoggedIn={setLoggedIn} />}></Route>
+          <Route
+            path='/login'
+            element={<Login setLoggedIn={setLoggedIn} />}
+          ></Route>
           <Route path='/signup' element={<Signup />}></Route>
-          {/* <Route path="/" element={<About/>}></Route>
-          {loggedIn ? <Home /> : <Login />}
-          <Login /> */}
+          {/* Default */}
+          <Route path='*' element={loggedIn ? <Home /> : <Login />}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
